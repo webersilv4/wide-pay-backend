@@ -104,6 +104,23 @@ abstract class Dispatch
     }
 
     /**
+     * @return null|int
+     */
+    public function err(?int $type = 0, ?string $message = '')
+    {   
+        http_response_code($type);
+        if ($type > 0 && !empty($message)){
+            echo json_encode(['error'=> $message]);
+        }elseif ($this->error()) {
+            if ($this->error() < 499){
+                http_response_code($this->error());
+                echo json_encode(array("error"=>"Desculpe, algo deu errado tente novamente."));
+            }
+        }
+        return;
+    }
+
+    /**
      * @return bool
      */
     public function dispatch(): bool
