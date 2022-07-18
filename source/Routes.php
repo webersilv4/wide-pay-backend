@@ -19,7 +19,7 @@
     /*
      * Renderizando urls
      */
-    $router->get('/', "Web:test", true); //['/', "Web:home", true] - ['url acessada', 'controlador', 'middleweare'];
+    $router->get('/', "Web:autoScrapingUrls", true); //['/', "Web:home", true] - ['url acessada', 'controlador', 'middleweare'];
     
     /*
      * Crinado novas urls para o usuario

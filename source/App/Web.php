@@ -6,38 +6,33 @@
     use Widepay\Scraping\Models\Model;
     use Firebase\JWT\JWT;
     use Firebase\JWT\Key;
-    use \DOMDocument;
-    use \DOMXPath;
 
     require __DIR__ . "/../Functions/Functions.php";
 
     class Web extends Model
     {
-
-        public function test()
+        /*
+        * Faz o Scraping em todas as URLS.
+        */
+        public function autoScrapingUrls()
         {
-            $httpClient = new \GuzzleHttp\Client();
+            $smtp = $this->myQuery('SELECT * FROM urls', []);
 
-            $response = $httpClient->get('https://www.imdb.com/search/name/?birth_monthday=12-10');
+            foreach ($smtp->fetchAll(\PDO::FETCH_ASSOC) as $value) {
+                try {
+                    $httpClient = new \GuzzleHttp\Client();
+                    $response = $httpClient->get($value['url_website']);
+                    $htmlString = (string) $response->getBody();
+                    libxml_use_internal_errors(true); // Quando o HTML estiver instável, isso suprime os avisos.
+                    
+                    $this->myQuery('UPDATE urls SET status_code = ?, requisition_body = ?, updated_at = ? WHERE id = ?', [200, $htmlString, realDate(), $value['id']]);
 
-            $htmlString = (string) $response->getBody();
+                } catch (\Throwable $e) { $this->myQuery('UPDATE urls SET status_code = ?, updated_at = ? WHERE id = ?', [404, realDate(), $value['id']]); }
 
-            // HTML is often wonky, this suppresses a lot of warnings
-            libxml_use_internal_errors(true);
-
-            
-            $doc = new DOMDocument();
-            $doc->loadHTML($htmlString);
-            
-            $xpath = new DOMXPath($doc);
-
-            $links = $xpath->evaluate('//div[@class="lister-list"][1]//h3/a');
-
-            foreach ($links as $link) {
-                echo $link->textContent.PHP_EOL;
             }
+
         }
-        
+
         /*
         * Cria um novo Url setado pelo usuário.
         */
@@ -58,7 +53,7 @@
         */
         public function renderUrls()
         {
-            $smtp = $this->myQuery("SELECT * FROM urls", []);
+            $smtp = $this->myQuery("SELECT * FROM urls WHERE usr_id = ?", [getDataToken()['usrId']]);
             
             if ($smtp->rowCount() > 0){
                 echo json_encode($smtp->fetch(\PDO::FETCH_OBJ));

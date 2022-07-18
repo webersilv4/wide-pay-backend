@@ -3,7 +3,7 @@
         'name' => 'widepay/scraping',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'b7e8767e606c253754bb805f153f3c9131cb69dc',
+        'reference' => '40255562e832b0d7753da7ae92025ae80e16afba',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -121,7 +121,7 @@
         'widepay/scraping' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'b7e8767e606c253754bb805f153f3c9131cb69dc',
+            'reference' => '40255562e832b0d7753da7ae92025ae80e16afba',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

@@ -4,7 +4,7 @@
     use Firebase\JWT\Key;
 
     /*
-     * Renderizando urls
+     * Retorna dados do token
      */
     function getDataToken(): array 
     {
