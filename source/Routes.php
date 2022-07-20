@@ -25,6 +25,17 @@
      */
     $router->post('/new-url', "Web:createNewUrl", true); //['/', "Web:home", true] - ['url acessada', 'controlador', 'middleweare'];
 
+
+    /*
+     * Alterar dados das urls do usuário
+     */
+    $router->put('/alter-url', "Web:alterUrl", true);
+
+    /*
+     * Deleta uma url de um usuário altenticado
+     */
+    $router->delete('/delete-url', "Web:deleteUrl", true);
+
     /*
      * Criando nova conta de usuário
      */

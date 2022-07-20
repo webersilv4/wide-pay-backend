@@ -44,3 +44,15 @@
      */
     function realDate(): string 
     {  date_default_timezone_set('America/Sao_Paulo'); return date("Y-m-d H:i:s"); }
+
+    /*
+     * Função que retorna erros da aplicação
+     */
+    function err(?int $code, ?string $message = '')
+    {   
+        if (is_numeric($code) && !empty($message)){
+            http_response_code($code);
+            echo json_encode(['error'=> $message]);
+        }
+        return;
+    }
