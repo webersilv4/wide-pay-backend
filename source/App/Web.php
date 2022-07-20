@@ -4,34 +4,11 @@
     namespace Widepay\Scraping\App;
 
     use Widepay\Scraping\Models\Model;
-    use Firebase\JWT\JWT;
-    use Firebase\JWT\Key;
 
     require __DIR__ . "/../Functions/Functions.php";
 
     class Web extends Model
     {
-        /*
-        * Faz o Scraping em todas as URLS.
-        */
-        public function autoScrapingUrls()
-        {
-            $smtp = $this->myQuery('SELECT * FROM urls', []);
-
-            foreach ($smtp->fetchAll(\PDO::FETCH_ASSOC) as $value) {
-                try {
-                    $httpClient = new \GuzzleHttp\Client();
-                    $response = $httpClient->get($value['url_website']);
-                    $htmlString = (string) $response->getBody();
-                    libxml_use_internal_errors(true); // Quando o HTML estiver instável, isso suprime os avisos.
-                    
-                    $this->myQuery('UPDATE urls SET status_code = ?, requisition_body = ?, updated_at = ? WHERE id = ?', [200, $htmlString, realDate(), $value['id']]);
-
-                } catch (\Throwable $e) { $this->myQuery('UPDATE urls SET status_code = ?, updated_at = ? WHERE id = ?', [404, realDate(), $value['id']]); }
-
-            }
-
-        }
 
         /*
         * Cria um novo Url setado pelo usuário.
@@ -44,7 +21,7 @@
                 http_response_code(201);
                 $this->myQuery("INSERT INTO urls (url_website, usr_id, created_at, updated_at) VALUES (?, ?, ?, ?)", [$url, getDataToken()['usrId'], realDate(), realDate()]);
                 echo json_encode(['success'=> 'Dados inseridos com sucesso.']);
-            }else{ echo 'Error'; }
+            }else{ echo json_encode(['error'=> 'URL inválida tente novamente.']); }
 
         }
 
@@ -56,7 +33,7 @@
             $smtp = $this->myQuery("SELECT * FROM urls WHERE usr_id = ?", [getDataToken()['usrId']]);
             
             if ($smtp->rowCount() > 0){
-                echo json_encode($smtp->fetch(\PDO::FETCH_OBJ));
+                echo json_encode($smtp->fetchAll(\PDO::FETCH_OBJ));
             }else{
                 http_response_code(404);
                 echo json_encode(['error'=> 'Ooops, nenhum dados foi encontrado.']);

@@ -32,26 +32,15 @@ class Router extends Dispatch
     public function __construct(string $projectUrl, ?string $separator = ":")
     {
         parent::__construct($projectUrl, $separator);
+        $this->setOrigins();
     }
 
     /**
-     * @param string $route
-     * @param $handler
-     * @param string|null $name
+     * Router Set origin.
+     *
      */
-    public function post(string $route, $handler, string $name = null): void
+    public function setOrigins()
     {
-        $this->addRoute("POST", $route, $handler, $name);
-    }
-
-    /**
-     * @param string $route
-     * @param $handler
-     * @param string|null $name
-     */
-    public function get(string $route, $handler, bool $middleweare = false): void
-    {   
-
         // Allow from any origin
         if (isset($_SERVER['HTTP_ORIGIN'])) {
             // Decide if the origin in $_SERVER['HTTP_ORIGIN'] is one
@@ -75,19 +64,74 @@ class Router extends Dispatch
         }
 
         header("Access-Control-Allow-Origin: *");
+    }
 
-        if ($middleweare === false ){
-                $this->addRoute("GET", $route, $handler, $middleweare);
-        }else{
+    /**
+     * @param string $route
+     * @param $handler
+     * @param string|null $name
+     */
+    public function post(string $route, $handler, bool $middleweare = false): void
+    {
+        $arrayRoute = [];
+        $newArrayRoute = array_push($arrayRoute, $route);
+        $new = explode('/', $_SERVER['REQUEST_URI']);
 
-            try {
-                if (!empty(JWT::decode(getToken(), new Key(JWT_KEY, 'HS256')))){
-                    $this->addRoute("GET", $route, $handler, $middleweare);
-                }else{$this->err(401, 'Você precisa estar autenticado para acessar essa rota.');}
-            } catch (\Throwable $e) {
-                $this->err(401, 'Token inválido.');
+        foreach ($arrayRoute as $key => $value) {
+            $lastParamRequest = end($new);
+            $value = str_replace("/", "", $value);
+            
+            if ($value === $lastParamRequest) {
+                 if ($middleweare === false){
+                $this->addRoute("POST", $route, $handler, $middleweare);
+                }else{
+
+                    try {
+                        if (!empty(JWT::decode(getToken(), new Key(JWT_KEY, 'HS256')))){
+                            $this->addRoute("POST", $route, $handler, $middleweare);
+                        }else{$this->err(401, 'Você precisa estar autenticado para acessar essa rota.');}
+                    } catch (\Throwable $e) {
+                        $this->err(401, 'Token inválido.');
+                    }
+
+                }
             }
+    
+        }
+    }
 
+    /**
+     * @param string $route
+     * @param $handler
+     * @param string|null $name
+     */
+    public function get(string $route, $handler, bool $middleweare = false): void
+    {   
+
+        $arrayRoute = [];
+        $newArrayRoute = array_push($arrayRoute, $route);
+        $new = explode('/', $_SERVER['REQUEST_URI']);
+
+        foreach ($arrayRoute as $key => $value) {
+            $lastParamRequest = end($new);
+            $value = str_replace("/", "", $value);
+            
+            if ($value === $lastParamRequest) {
+                 if ($middleweare === false){
+                $this->addRoute("GET", $route, $handler, $middleweare);
+                }else{
+
+                    try {
+                        if (!empty(JWT::decode(getToken(), new Key(JWT_KEY, 'HS256')))){
+                            $this->addRoute("GET", $route, $handler, $middleweare);
+                        }else{$this->err(401, 'Você precisa estar autenticado para acessar essa rota.');}
+                    } catch (\Throwable $e) {
+                        $this->err(401, 'Token inválido.');
+                    }
+
+                }
+            }
+    
         }
         
         
@@ -98,9 +142,33 @@ class Router extends Dispatch
      * @param $handler
      * @param string|null $name
      */
-    public function put(string $route, $handler, string $name = null): void
+    public function put(string $route, $handler, bool $middleweare = false): void
     {
-        $this->addRoute("PUT", $route, $handler, $name);
+        $arrayRoute = [];
+        $newArrayRoute = array_push($arrayRoute, $route);
+        $new = explode('/', $_SERVER['REQUEST_URI']);
+
+        foreach ($arrayRoute as $key => $value) {
+            $lastParamRequest = end($new);
+            $value = str_replace("/", "", $value);
+            
+            if ($value === $lastParamRequest) {
+                 if ($middleweare === false){
+                $this->addRoute("PUT", $route, $handler, $middleweare);
+                }else{
+
+                    try {
+                        if (!empty(JWT::decode(getToken(), new Key(JWT_KEY, 'HS256')))){
+                            $this->addRoute("PUT", $route, $handler, $middleweare);
+                        }else{$this->err(401, 'Você precisa estar autenticado para acessar essa rota.');}
+                    } catch (\Throwable $e) {
+                        $this->err(401, 'Token inválido.');
+                    }
+
+                }
+            }
+    
+        }
     }
 
     /**
@@ -108,9 +176,33 @@ class Router extends Dispatch
      * @param $handler
      * @param string|null $name
      */
-    public function patch(string $route, $handler, string $name = null): void
+    public function patch(string $route, $handler, bool $middleweare = false): void
     {
-        $this->addRoute("PATCH", $route, $handler, $name);
+        $arrayRoute = [];
+        $newArrayRoute = array_push($arrayRoute, $route);
+        $new = explode('/', $_SERVER['REQUEST_URI']);
+
+        foreach ($arrayRoute as $key => $value) {
+            $lastParamRequest = end($new);
+            $value = str_replace("/", "", $value);
+            
+            if ($value === $lastParamRequest) {
+                 if ($middleweare === false){
+                $this->addRoute("PATCH", $route, $handler, $middleweare);
+                }else{
+
+                    try {
+                        if (!empty(JWT::decode(getToken(), new Key(JWT_KEY, 'HS256')))){
+                            $this->addRoute("PATCH", $route, $handler, $middleweare);
+                        }else{$this->err(401, 'Você precisa estar autenticado para acessar essa rota.');}
+                    } catch (\Throwable $e) {
+                        $this->err(401, 'Token inválido.');
+                    }
+
+                }
+            }
+    
+        }
     }
 
     /**
@@ -118,8 +210,32 @@ class Router extends Dispatch
      * @param $handler
      * @param string|null $name
      */
-    public function delete(string $route, $handler, string $name = null): void
+    public function delete(string $route, $handler, bool $middleweare = false): void
     {
-        $this->addRoute("DELETE", $route, $handler, $name);
+        $arrayRoute = [];
+        $newArrayRoute = array_push($arrayRoute, $route);
+        $new = explode('/', $_SERVER['REQUEST_URI']);
+
+        foreach ($arrayRoute as $key => $value) {
+            $lastParamRequest = end($new);
+            $value = str_replace("/", "", $value);
+            
+            if ($value === $lastParamRequest) {
+                 if ($middleweare === false){
+                $this->addRoute("DELETE", $route, $handler, $middleweare);
+                }else{
+
+                    try {
+                        if (!empty(JWT::decode(getToken(), new Key(JWT_KEY, 'HS256')))){
+                            $this->addRoute("DELETE", $route, $handler, $middleweare);
+                        }else{$this->err(401, 'Você precisa estar autenticado para acessar essa rota.');}
+                    } catch (\Throwable $e) {
+                        $this->err(401, 'Token inválido.');
+                    }
+
+                }
+            }
+    
+        }
     }
 }

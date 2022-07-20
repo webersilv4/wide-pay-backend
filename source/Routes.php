@@ -15,22 +15,20 @@
 
     $router->group("api"); // Faz com que as rotas tenham um prefixo EX: (api/v1/[url])
     
-    
     /*
-     * Renderizando urls
+     * Mostrando URLS do usuario autenticado
      */
-    $router->get('/', "Web:autoScrapingUrls", true); //['/', "Web:home", true] - ['url acessada', 'controlador', 'middleweare'];
-    
+    $router->get('/render-urls', "Web:renderUrls", true);
+
     /*
      * Crinado novas urls para o usuario
      */
-    $router->post('/new-url', "Web:createNewUrl"); //['/', "Web:home", true] - ['url acessada', 'controlador', 'middleweare'];
+    $router->post('/new-url', "Web:createNewUrl", true); //['/', "Web:home", true] - ['url acessada', 'controlador', 'middleweare'];
 
     /*
      * Criando nova conta de usuário
      */
     $router->post('/create-account', "Web:createAccount");
-
 
     /*
      * Logando na conta de usuario
@@ -39,8 +37,3 @@
 
 
     $router->dispatch();
-
-
-    if ($router->err()){
-        $router->err();
-    }

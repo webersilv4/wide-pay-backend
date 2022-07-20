@@ -6,7 +6,6 @@
 
     class Model extends Database
     {
-        
         /*
          *  [SQL][bindValues] 
          *  select('SELECT * FROM users WHERE id = ? and hashUser = ?', [1,11]); 
