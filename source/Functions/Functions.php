@@ -56,3 +56,19 @@
         }
         return;
     }
+
+    /*
+     * Função que faz o recebimento e tratamento dos dados vindo do front-end
+     */
+    function getDataMethod(?array $data)
+    {
+        $newData = [];
+
+        foreach ($data as $key => $value) {
+            $d=preg_replace('/[^a-z0-9]/i', "", $key);
+            $e=preg_replace('/[^a-z0-9]/i', "", $value);
+            $newData = [$d => $e];
+        }
+
+        return $newData;
+    }

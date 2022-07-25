@@ -19,7 +19,7 @@
             endforeach;   
             
             $smtp->execute();
-
+            
             return $smtp;
         }
     }

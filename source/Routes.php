@@ -23,7 +23,7 @@
     /*
      * Crinado novas urls para o usuario
      */
-    $router->post('/new-url', "Web:createNewUrl", true); //['/', "Web:home", true] - ['url acessada', 'controlador', 'middleweare'];
+    $router->post('/new-url', "Web:createNewUrl"); //['/', "Web:home", true] - ['url acessada', 'controlador', 'middleweare'];
 
 
     /*
