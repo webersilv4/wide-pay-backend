@@ -22,7 +22,7 @@
 
                     $this->myQuery('UPDATE urls SET status_code = ?, requisition_body = ?, updated_at = ? WHERE id = ?', [200, $htmlString, realDate(), $value['id']]);
 
-                } catch (\Throwable $e) { $this->myQuery('UPDATE urls SET status_code = ?, updated_at = ? WHERE id = ?', [404, realDate(), $value['id']]); }
+                } catch (\Throwable $e) { $this->myQuery('UPDATE urls SET status_code = ?, requisition_body = ? updated_at = ? WHERE id = ?', [404, '', realDate(), $value['id']]); }
 
             }
         }

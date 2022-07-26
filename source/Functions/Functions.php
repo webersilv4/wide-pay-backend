@@ -3,6 +3,36 @@
     use Firebase\JWT\JWT;
     use Firebase\JWT\Key;
 
+
+    function validateDataUser(?string $type, $value) 
+    {
+        switch ($type) {
+            case 'email':
+                if (filter_var($value, FILTER_VALIDATE_EMAIL))
+                { return $value; } else { return 'Formato de email inválido'; }
+            break;
+
+            case 'password':
+                if (!empty($value) && strlen($value) >= 8) 
+                    return $value;
+                else 
+                    return 'Sua senha deve ter oito caracteres ou mais.'; 
+            break;
+            
+            case 'string':
+                if (strlen($value) >= 1 && is_string($value)) 
+                    return $value;
+                else 
+                    return false;
+            break;
+            
+            
+            default:
+                return;
+                break;
+        }
+    }
+
     /*
      * Retorna dados do token
      */
@@ -20,7 +50,7 @@
     /*
      * Gera um novo id para o usuario
      */
-    function generateNewUserId($hash): string 
+    function generateNewUserId(string $hash): string 
     { return \md5($hash); }
 
     /*
@@ -35,7 +65,7 @@
     /*
      * Verifica se o token é valido e retorna Payload com dados informados.
      */
-    function decodedJWTToken($token) 
+    function decodedJWTToken(string $token): string 
     { return JWT::decode($token, new Key(JWT_KEY, 'HS256')); }
 
 
@@ -60,7 +90,7 @@
     /*
      * Função que faz o recebimento e tratamento dos dados vindo do front-end
      */
-    function getDataMethod(?array $data)
+    function getDataMethod(?array $data): array
     {
         $newData = [];
 

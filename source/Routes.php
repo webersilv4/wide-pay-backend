@@ -25,7 +25,6 @@
      */
     $router->post('/new-url', "Web:createNewUrl"); //['/', "Web:home", true] - ['url acessada', 'controlador', 'middleweare'];
 
-
     /*
      * Alterar dados das urls do usuário
      */
@@ -39,12 +38,12 @@
     /*
      * Criando nova conta de usuário
      */
-    $router->post('/create-account', "Web:createAccount");
+    $router->post('/signup', "Web:createAccount");
 
     /*
      * Logando na conta de usuario
      */
-    $router->post('/login', "Web:loginAccount");
+    $router->post('/signin', "Web:loginAccount");
 
 
     $router->dispatch();

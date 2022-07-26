@@ -9,6 +9,7 @@
 
     class Web extends Model
     {
+
         /*
         * Classe que faz o scraping e rotorna os corpo HTML
         */
@@ -42,7 +43,7 @@
                 $this->scraping($url, $id); // Passa a url e o id para fazer o scraping e atulizar a base de dados URLS.
                 
                 echo json_encode(['success'=> 'Dados inseridos com sucesso.']);
-            }else{ err(406, 'URL inválida tente novamente.'); }
+            }else{ err(400, 'URL inválida tente novamente.'); }
         }
 
         /*
@@ -60,7 +61,7 @@
                 
                 echo json_encode(['success'=> 'Dados alterados com sucesso.']);
                 
-            }else{ err(406, 'URL ou ID inválidos tente novamente.'); }
+            }else{ err(400, 'URL ou ID inválidos tente novamente.'); }
 
         }
 
@@ -78,7 +79,7 @@
                     http_response_code(201);
                     echo json_encode(['success'=> 'Dado excluido com sucesso.']);
                 }else { err(400, 'Não foi possivel excluir está linha tente novamente'); }
-            }else{ err(406 ,'URL ou ID inválidos ou não existem tente novamente.'); }
+            }else{ err(400 ,'URL ou ID inválidos ou não existem tente novamente.'); }
 
         }
 
@@ -91,9 +92,9 @@
 
             $smtp = $this->myQuery("SELECT * FROM urls WHERE usr_id = ? ORDER BY id DESC", [$usrId]);
             
-            if ($smtp->rowCount() > 0){
+            if ($smtp->rowCount() > 0)
                 echo json_encode($smtp->fetchAll(\PDO::FETCH_OBJ));
-            }else{ err(404, 'Ooops, você não tem nenhuma URL cadastrada.'); }
+            else err(404, 'Ooops, você não tem nenhuma URL cadastrada.');
 
         }
 
@@ -110,18 +111,26 @@
             $newPasswd = password_hash($passwd, PASSWORD_DEFAULT);
 
             $smtp = $this->myQuery("SELECT * FROM users WHERE email = ?", [$email]);
-            
-            // Verificando email já existe se não existir add novo usuario.
-            if ($smtp->rowCount() == 0){
 
-                $newUserId = \generateNewUserId($email);
-                
-                http_response_code(201);
-                $smtp = $this->myQuery("INSERT INTO users (usr_id, first_name, last_name, email, passwd, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)", [$newUserId, $firstName, $lastName, $email, $newPasswd, realDate(), realDate()]);
-                
-                echo json_encode(['success'=> 'Dados inseridos com sucesso.', 'token' => generateNewJWT($email, $newUserId)]);
-                
-            }else{ err(400, 'Usuário já existe.'); }
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)){
+                if (!empty($passwd) && strlen($passwd) >= 8){
+                    if (!empty($firstName) && strlen($firstName) >= 3 && !empty($lastName) && strlen($lastName) >= 3){
+                        
+                        if ($smtp->rowCount() == 0){ // Verificando email já existe se não existir add novo usuario.
+
+                            $newUserId = generateNewUserId($email); // Gerando um novo id para o usuario
+                            
+                            http_response_code(201);
+                            $smtp = $this->myQuery("INSERT INTO users (usr_id, first_name, last_name, email, passwd, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)", [$newUserId, $firstName, $lastName, $email, $newPasswd, realDate(), realDate()]);
+                            
+                            echo json_encode(['success'=> 'Dados inseridos com sucesso.', 'token' => generateNewJWT($email, $newUserId)]);
+                            
+                        }else{ err(400, 'Usuário já existe.'); }
+                    
+                    }else{ err(400, 'Nome ou sobrenome deve conter ao menos 3 caracteres.'); }
+                }else { err(400, 'Sua senha deve conter ao menos 8 caracteres.'); }
+
+            }else{ err(400, 'Formato de email é inválido.'); }
 
         }
 
@@ -137,18 +146,21 @@
             $passwd = isset($data['passwd']) ? $data['passwd'] : '';
 
             $smtp = $this->myQuery("SELECT * FROM users WHERE email = ?", [$email]);
-            
-            // Verificando email já existe se não existir add novo usuario.
-            if ($smtp->rowCount() >= 1){
 
-                $newUserId = generateNewUserId($email);
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)){
+                if (!empty($passwd) && strlen($passwd) >= 8){ 
+                    
+                    if ($smtp->rowCount() >= 1){ // Verificando usuario.
+                        $newUserId = generateNewUserId($email); // Gerando um novo id para o usuario
 
-                if (password_verify($passwd, $smtp->fetch(\PDO::FETCH_OBJ)->passwd)) {
-                    http_response_code(201);
-                    echo json_encode(['token' => generateNewJWT($email, $newUserId)]);
-                }
+                        if (password_verify($passwd, $smtp->fetch(\PDO::FETCH_OBJ)->passwd)) {
+                            http_response_code(201);
+                            echo json_encode(['token' => generateNewJWT($email, $newUserId)]);
+                        } 
+                    }else{ err(400, 'Usuário ou senha inválidos.'); }
                 
-            }else{ err(400, 'Usuário ou senha inválidos.'); }
+                }else{ err(400, 'Sua senha deve conter ao menos 8 caracteres.'); }
+            }else { err(400, 'Formato de email é inválido.'); }            
         }
 
     }
